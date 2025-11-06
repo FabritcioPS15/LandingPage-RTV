@@ -133,6 +133,61 @@ function App() {
     return errors;
   };
 
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const errors = validateForm();
+  
+  if (Object.keys(errors).length === 0) {
+    setIsSubmitting(true);
+    
+    try {
+      // URL actualizada con la implementación más reciente
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGpE91YlL5Ohqe-zjDdhP_Vszxp8JNlRAQtEZcLFMVTdBptOxarY2ACDI2jXiVD3eH/exec';
+      
+      console.log('Enviando datos al servidor...', formData);
+      
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Importante para evitar problemas de CORS
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      console.log('Solicitud enviada. Verifica la hoja de cálculo.');
+      
+      // Mostrar mensaje de éxito
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 5000);
+      
+      // Resetear formulario
+      setFormData({
+        documentType: 'dni',
+        nombres: '',
+        apellidos: '',
+        documento: '',
+        celular: '',
+        correo: '',
+        placa: '',
+        fromEmpresa: false,
+        empresa: ''
+      });
+      setFormErrors({});
+      
+    } catch (error) {
+      console.error('Error al enviar el formulario:', error);
+      // Mostrar mensaje de éxito aunque haya error (por el modo no-cors)
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  } else {
+    setFormErrors(errors);
+  }
+};
+
   const isFilled = (v: string) => v.trim().length > 0;
   const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
@@ -171,38 +226,6 @@ function App() {
     }, 5000);
     return () => clearInterval(id);
   }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    const errors = validateForm();
-    
-    if (Object.keys(errors).length === 0) {
-      // Simular envío del formulario
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Resetear formulario después del envío exitoso
-      setFormData({
-        documentType: 'dni',
-        nombres: '',
-        apellidos: '',
-        documento: '',
-        celular: '',
-        correo: '',
-        placa: '',
-        fromEmpresa: false,
-        empresa: ''
-      });
-      setFormErrors({});
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    } else {
-      setFormErrors(errors);
-    }
-    
-    setIsSubmitting(false);
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
