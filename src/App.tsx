@@ -5,13 +5,16 @@ import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 import BrandButton from './components/BrandButton';
 
+type DocumentType = 'dni' | 'carnet';
+
 type FormData = {
+  documentType: DocumentType;
   nombres: string;
   apellidos: string;
-  dni: string;
+  documento: string;
   celular: string;
-  numeroContacto: string;
   correo: string;
+  placa: string;
   fromEmpresa: boolean;
   empresa: string;
 };
@@ -27,11 +30,12 @@ type Service = {
 
 function App() {
   const [formData, setFormData] = useState<FormData>({
+    documentType: 'dni',
     nombres: '',
     apellidos: '',
-    dni: '',
+    documento: '',
     celular: '',
-    numeroContacto: '',
+    correo: '',
     placa: '',
     fromEmpresa: false,
     empresa: ''
@@ -89,16 +93,48 @@ function App() {
     
     if (!formData.nombres.trim()) errors.nombres = 'Los nombres son requeridos';
     if (!formData.apellidos.trim()) errors.apellidos = 'Los apellidos son requeridos';
-    if (!formData.dni.trim()) errors.dni = 'El DNI es requerido';
-    if (!formData.celular.trim()) errors.celular = 'El celular es requerido';
-    if (!formData.numeroContacto.trim()) errors.numeroContacto = 'El número de contacto es requerido';
-    if (!formData.placa.trim()) errors.placa = 'Campo obligatorio';
+    
+    // Validación de documento según el tipo seleccionado
+    if (!formData.documento.trim()) {
+      errors.documento = `El ${formData.documentType === 'dni' ? 'DNI' : 'Carnet de Extranjería'} es requerido`;
+    } else {
+      if (formData.documentType === 'dni') {
+        if (!/^\d{8}$/.test(formData.documento)) {
+          errors.documento = 'El DNI debe tener exactamente 8 dígitos';
+        }
+      } else {
+        if (!/^[A-Z0-9]{1,20}$/i.test(formData.documento)) {
+          errors.documento = 'El Carnet de Extranjería debe tener hasta 20 caracteres alfanuméricos';
+        }
+      }
+    }
+    
+    // Validación de celular: exactamente 9 dígitos
+    if (!formData.celular.trim()) {
+      errors.celular = 'El celular es requerido';
+    } else if (!/^\d{9}$/.test(formData.celular)) {
+      errors.celular = 'El celular debe tener exactamente 9 dígitos';
+    }
+    
+    // Validación de correo: debe contener @
+    if (!formData.correo.trim()) {
+      errors.correo = 'El correo electrónico es requerido';
+    } else if (!/\S+@\S+\.\S+/.test(formData.correo)) {
+      errors.correo = 'El correo electrónico debe contener @ y ser válido';
+    }
+    
+    // Validación de placa: exactamente 6 caracteres alfanuméricos
+    if (!formData.placa.trim()) {
+      errors.placa = 'La placa es requerida';
+    } else if (!/^[A-Z0-9]{6}$/i.test(formData.placa)) {
+      errors.placa = 'La placa debe tener exactamente 6 caracteres (letras y números)';
+    }
     
     return errors;
   };
 
-  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
   const isFilled = (v: string) => v.trim().length > 0;
+  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
   // Autoplay del carrusel de contacto
   useEffect(() => {
@@ -148,11 +184,12 @@ function App() {
       
       // Resetear formulario después del envío exitoso
       setFormData({
+        documentType: 'dni',
         nombres: '',
         apellidos: '',
-        dni: '',
+        documento: '',
         celular: '',
-        numeroContacto: '',
+        correo: '',
         placa: '',
         fromEmpresa: false,
         empresa: ''
@@ -167,16 +204,58 @@ function App() {
     setIsSubmitting(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
+    let processedValue = value;
+    
     switch (name) {
+      case 'documentType':
+        // Al cambiar el tipo de documento, limpiar el campo documento
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value as DocumentType,
+          documento: '' // Limpiar el campo documento cuando se cambie el tipo
+        }));
+        // Limpiar error del documento
+        if (formErrors.documento) {
+          setFormErrors((prev) => ({
+            ...prev,
+            documento: ''
+          }));
+        }
+        return;
+      
+      case 'documento':
+        if (formData.documentType === 'dni') {
+          // Solo números, exactamente 8 dígitos para DNI
+          processedValue = value.replace(/\D/g, '').substring(0, 8);
+        } else {
+          // Carnet de extranjería: hasta 20 caracteres alfanuméricos, mayúsculas
+          processedValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 20);
+        }
+        break;
+      
       case 'placa':
-        value = value.toUpperCase();
+        // Convertir a mayúsculas y limitar a exactamente 6 caracteres alfanuméricos
+        processedValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 6);
+        break;
+      
+      case 'celular':
+        // Solo números, exactamente 9 dígitos
+        processedValue = value.replace(/\D/g, '').substring(0, 9);
+        break;
+      
+      case 'correo':
+        // Mantener el valor original para el correo
+        processedValue = value;
         break;
     }
+    
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? String(checked) === 'true' ? true : checked : value,
+      [name]: type === 'checkbox' ? checked : processedValue,
     }));
     
     // Limpiar error del campo cuando el usuario empiece a escribir
@@ -254,7 +333,7 @@ function App() {
                       <span>{brandAlt ? 'RTP SAN CRISTOBAL' : 'RTV SAN CRISTOBAL'}</span>
                       <span className="w-2 h-2 bg-black rounded-full" />
                     </div>
-                    <h2 className="momo-trust-display-regular text-3xl md:text-5xl font-extrabold text-black leading-tight mb-4">
+                    <h2 className="text-3xl md:text-5xl font-extrabold text-black leading-tight mb-4">
                       Llena estos datos y participa de 1 revisión técnica gratis
                     </h2>
                     <p className="text-gray-700 text-base md:text-lg mb-8">
@@ -337,26 +416,42 @@ function App() {
                           )}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
+                        {/* Fila: Tipo Documento + Número Documento + Celular */}
+                        <div className="grid grid-cols-12 gap-4">
+                          {/* Selector de tipo de documento - más angosto */}
+                          <div className="col-span-3 relative">
+                            <select
+                              name="documentType"
+                              value={formData.documentType}
+                              onChange={handleChange}
+                              className="w-full border border-gray-300 bg-white text-gray-800 text-sm rounded-md px-3 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors"
+                            >
+                              <option value="dni">DNI</option>
+                              <option value="carnet">CE</option>
+                            </select>
+                          </div>
+                          
+                          {/* Número de documento */}
+                          <div className="col-span-5 relative">
                             <input
                               type="text"
-                              name="dni"
-                              value={formData.dni}
+                              name="documento"
+                              value={formData.documento}
                               onChange={handleChange}
                               required
-                              placeholder="DNI *"
-                              className={`w-full border ${formErrors.dni ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                              placeholder={formData.documentType === 'dni' ? 'DNI *' : 'Carnet *'}
+                              className={`w-full border ${formErrors.documento ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
                             />
-                            {formErrors.dni && (
-                              <p className="text-red-500 text-xs mt-1">{formErrors.dni}</p>
+                            {formErrors.documento && (
+                              <p className="text-red-500 text-xs mt-1">{formErrors.documento}</p>
                             )}
-                            {isFilled(formData.dni) && !formErrors.dni && (
+                            {isFilled(formData.documento) && !formErrors.documento && (
                               <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
                             )}
                           </div>
-                          
-                          <div className="relative">
+
+                          {/* Celular */}
+                          <div className="col-span-4 relative">
                             <input
                               type="tel"
                               name="celular"
@@ -375,40 +470,43 @@ function App() {
                           </div>
                         </div>
 
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="numeroContacto"
-                            value={formData.numeroContacto}
-                            onChange={handleChange}
-                            required
-                            placeholder="Número de contacto *"
-                            className={`w-full border ${formErrors.numeroContacto ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
-                          />
-                          {formErrors.numeroContacto && (
-                            <p className="text-red-500 text-xs mt-1">{formErrors.numeroContacto}</p>
-                          )}
-                          {isFilled(formData.numeroContacto) && !formErrors.numeroContacto && (
-                            <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
-                          )}
-                        </div>
+                        {/* Fila: Correo + Placa */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="relative">
+                            <input
+                              type="email"
+                              name="correo"
+                              value={formData.correo}
+                              onChange={handleChange}
+                              required
+                              placeholder="Correo electrónico *"
+                              className={`w-full border ${formErrors.correo ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                            />
+                            {formErrors.correo && (
+                              <p className="text-red-500 text-xs mt-1">{formErrors.correo}</p>
+                            )}
+                            {isValidEmail(formData.correo) && !formErrors.correo && (
+                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                            )}
+                          </div>
 
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="placa"
-                            value={formData.placa}
-                            onChange={handleChange}
-                            required
-                            placeholder="Placa del vehículo *"
-                            className={`w-full border ${formErrors.placa ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
-                          />
-                          {formErrors.placa && (
-                            <p className="text-red-500 text-xs mt-1">{formErrors.placa}</p>
-                          )}
-                          {formData.correo && isValidEmail(formData.correo) && !formErrors.correo && (
-                            <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
-                          )}
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="placa"
+                              value={formData.placa}
+                              onChange={handleChange}
+                              required
+                              placeholder="Placa (6 caracteres) *"
+                              className={`w-full border ${formErrors.placa ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                            />
+                            {formErrors.placa && (
+                              <p className="text-red-500 text-xs mt-1">{formErrors.placa}</p>
+                            )}
+                            {isFilled(formData.placa) && !formErrors.placa && (
+                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                            )}
+                          </div>
                         </div>
 
                         <div className="space-y-2">
