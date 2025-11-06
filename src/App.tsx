@@ -141,18 +141,21 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsSubmitting(true);
     
     try {
-      // URL actualizada con la implementación más reciente
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGpE91YlL5Ohqe-zjDdhP_Vszxp8JNlRAQtEZcLFMVTdBptOxarY2ACDI2jXiVD3eH/exec';
+      // URL actualizada con la nueva implementación
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFzaGAyOZ4xF5UWEuDkOeNm8LW7UBxvQSTYHp_qTGdKTac1yxiGXdOAE6cRiVzN8sj/exec';
       
       console.log('Enviando datos al servidor...', formData);
       
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Importante para evitar problemas de CORS
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          debug: true  // Agregamos un flag de depuración
+        })
       });
 
       console.log('Solicitud enviada. Verifica la hoja de cálculo.');
