@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, X, ChevronDown, Stethoscope, Gauge, Check } from 'lucide-react';
+import { Menu, X, ChevronDown, Stethoscope, Gauge, Check, Phone, Mail } from 'lucide-react';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { FaWhatsapp } from 'react-icons/fa';
 import BrandButton from './components/BrandButton';
 
 type FormData = {
@@ -31,7 +32,7 @@ function App() {
     dni: '',
     celular: '',
     numeroContacto: '',
-    correo: '',
+    placa: '',
     fromEmpresa: false,
     empresa: ''
   });
@@ -47,10 +48,25 @@ function App() {
   const [brandAlt, setBrandAlt] = useState<boolean>(false);
   const [brandPulse, setBrandPulse] = useState<boolean>(false);
 
-  const contacts: { title: string; description: string; href: string }[] = [
-    { title: 'WhatsApp', description: 'Chatea con nosotros al instante', href: 'https://wa.me/51900111222' },
-    { title: 'Teléfono', description: 'Llámanos ahora mismo', href: 'tel:+51900333444' },
-    { title: 'Correo', description: 'Escríbenos tus consultas', href: 'mailto:contacto@rtvsancristobal.pe' }
+  const contacts: { title: string; description: string; href: string; icon: JSX.Element }[] = [
+    { 
+      title: 'WhatsApp', 
+      description: 'Chatea con nosotros al instante', 
+      href: 'https://wa.me/51900111222',
+      icon: <FaWhatsapp className="text-green-500" size={24} />
+    },
+    { 
+      title: 'Teléfono', 
+      description: 'Llámanos ahora mismo', 
+      href: 'tel:+51900333444',
+      icon: <Phone className="text-blue-500" size={24} />
+    },
+    { 
+      title: 'Correo', 
+      description: 'Escríbenos tus consultas', 
+      href: 'mailto:contacto@rtvsancristobal.pe',
+      icon: <Mail className="text-red-500" size={24} />
+    }
   ];
 
   const services: Service[] = [
@@ -76,9 +92,7 @@ function App() {
     if (!formData.dni.trim()) errors.dni = 'El DNI es requerido';
     if (!formData.celular.trim()) errors.celular = 'El celular es requerido';
     if (!formData.numeroContacto.trim()) errors.numeroContacto = 'El número de contacto es requerido';
-    if (formData.correo && !/\S+@\S+\.\S+/.test(formData.correo)) {
-      errors.correo = 'El correo no es válido';
-    }
+    if (!formData.placa.trim()) errors.placa = 'Campo obligatorio';
     
     return errors;
   };
@@ -86,7 +100,7 @@ function App() {
   const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
   const isFilled = (v: string) => v.trim().length > 0;
 
-  // Autoplay del carrusel de contacto (también tendrá flechas)
+  // Autoplay del carrusel de contacto
   useEffect(() => {
     const id = setInterval(() => {
       setBenefitIndex((i) => (i + 1) % contacts.length);
@@ -139,7 +153,7 @@ function App() {
         dni: '',
         celular: '',
         numeroContacto: '',
-        correo: '',
+        placa: '',
         fromEmpresa: false,
         empresa: ''
       });
@@ -155,6 +169,11 @@ function App() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    switch (name) {
+      case 'placa':
+        value = value.toUpperCase();
+        break;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? String(checked) === 'true' ? true : checked : value,
@@ -181,7 +200,6 @@ function App() {
           >
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          {/* Nav removido a solicitud del cliente */}
           {/* Toast */}
           {showToast && (
             <div className="fixed bottom-6 right-6 bg-white shadow-2xl rounded-lg px-4 py-3 border border-gray-200 text-gray-800 z-50">
@@ -242,17 +260,25 @@ function App() {
                     <p className="text-gray-700 text-base md:text-lg mb-8">
                       Regístrate para acceder a oportunidades, beneficios exclusivos y soporte dedicado. Nuestro proceso es rápido, seguro y pensado para acompañarte en cada paso.
                     </p>
+                    
+
                     <div className="space-y-4 mb-8 text-center">
                       <div className="flex items-center justify-center gap-4">
                         <button type="button" aria-label="Anterior" onClick={prevContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5">
                           <MdChevronLeft size={22} />
                         </button>
-                        <div className="inline-flex items-center gap-3 transition-all bg-white border border-black/10 rounded-xl shadow-sm px-5 py-4">
-                          <div key={benefitIndex} className="animate-fade-in text-center">
+                        <div className="inline-flex items-center gap-4 transition-all bg-white border border-black/10 rounded-xl shadow-sm px-6 py-4">
+                          <div className="flex-shrink-0">
+                            {contacts[benefitIndex].icon}
+                          </div>
+                          <div key={benefitIndex} className="animate-fade-in text-left">
                             <p className="text-xl font-extrabold text-black leading-tight">{contacts[benefitIndex].title}</p>
                             <p className="text-base text-gray-800">{contacts[benefitIndex].description}</p>
                             <div className="mt-3">
-                              <a href={contacts[benefitIndex].href} target="_blank" rel="noreferrer" className="inline-block text-sm font-semibold text-white bg-[#ec8035] hover:bg-[#d4692a] px-3.5 py-2 rounded-md">
+                              <a href={contacts[benefitIndex].href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#ec8035] hover:bg-[#d4692a] px-4 py-2 rounded-md transition-colors">
+                                {contacts[benefitIndex].title === 'WhatsApp' && <FaWhatsapp size={16} />}
+                                {contacts[benefitIndex].title === 'Teléfono' && <Phone size={16} />}
+                                {contacts[benefitIndex].title === 'Correo' && <Mail size={16} />}
                                 Ir ahora
                               </a>
                             </div>
@@ -369,15 +395,16 @@ function App() {
 
                         <div className="relative">
                           <input
-                            type="email"
-                            name="correo"
-                            value={formData.correo}
+                            type="text"
+                            name="placa"
+                            value={formData.placa}
                             onChange={handleChange}
-                            placeholder="Correo electrónico"
-                            className={`w-full border ${formErrors.correo ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                            required
+                            placeholder="Placa del vehículo *"
+                            className={`w-full border ${formErrors.placa ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
                           />
-                          {formErrors.correo && (
-                            <p className="text-red-500 text-xs mt-1">{formErrors.correo}</p>
+                          {formErrors.placa && (
+                            <p className="text-red-500 text-xs mt-1">{formErrors.placa}</p>
                           )}
                           {formData.correo && isValidEmail(formData.correo) && !formErrors.correo && (
                             <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
