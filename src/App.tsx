@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Menu, X, ChevronDown, Stethoscope, Gauge, Check, Phone, Mail } from 'lucide-react';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdChevronLeft, MdChevronRight, MdCelebration, MdCheckCircle } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 import BrandButton from './components/BrandButton';
 
@@ -13,7 +13,6 @@ type FormData = {
   apellidos: string;
   documento: string;
   celular: string;
-  correo: string;
   placa: string;
   fromEmpresa: boolean;
   empresa: string;
@@ -35,7 +34,6 @@ function App() {
     apellidos: '',
     documento: '',
     celular: '',
-    correo: '',
     placa: '',
     fromEmpresa: false,
     empresa: ''
@@ -109,18 +107,11 @@ function App() {
       }
     }
     
-    // Validación de celular: exactamente 9 dígitos
+    // Validación de celular: exactamente 9 dígitos y que comience con 9
     if (!formData.celular.trim()) {
       errors.celular = 'El celular es requerido';
-    } else if (!/^\d{9}$/.test(formData.celular)) {
-      errors.celular = 'El celular debe tener exactamente 9 dígitos';
-    }
-    
-    // Validación de correo: debe contener @
-    if (!formData.correo.trim()) {
-      errors.correo = 'El correo electrónico es requerido';
-    } else if (!/\S+@\S+\.\S+/.test(formData.correo)) {
-      errors.correo = 'El correo electrónico debe contener @ y ser válido';
+    } else if (!/^9\d{8}$/.test(formData.celular)) {
+      errors.celular = 'El celular debe comenzar con 9 y tener 9 dígitos';
     }
     
     // Validación de placa: exactamente 6 caracteres alfanuméricos
@@ -171,7 +162,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         apellidos: '',
         documento: '',
         celular: '',
-        correo: '',
         placa: '',
         fromEmpresa: false,
         empresa: ''
@@ -192,7 +182,6 @@ const handleSubmit = async (e: React.FormEvent) => {
 };
 
   const isFilled = (v: string) => v.trim().length > 0;
-  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
   // Autoplay del carrusel de contacto
   useEffect(() => {
@@ -269,13 +258,12 @@ const handleSubmit = async (e: React.FormEvent) => {
         break;
       
       case 'celular':
-        // Solo números, exactamente 9 dígitos
+        // Solo números, máximo 9 dígitos, debe comenzar con 9
         processedValue = value.replace(/\D/g, '').substring(0, 9);
-        break;
-      
-      case 'correo':
-        // Mantener el valor original para el correo
-        processedValue = value;
+        // Si ya hay un 9 como primer dígito, no permitir cambiarlo
+        if (processedValue.length > 0 && processedValue[0] !== '9') {
+          processedValue = '9' + processedValue.substring(1);
+        }
         break;
     }
     
@@ -306,12 +294,51 @@ const handleSubmit = async (e: React.FormEvent) => {
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           {/* Toast */}
-          {showToast && (
-            <div className="fixed bottom-6 right-6 bg-white shadow-2xl rounded-lg px-4 py-3 border border-gray-200 text-gray-800 z-50">
-              <p className="text-sm font-semibold">¡Gracias! Llenaste correctamente</p>
-              <p className="text-xs text-gray-600">Estás participando del sorteo para una revisión técnica gratis.</p>
+          <div className={`fixed bottom-6 right-6 z-50 transition-all duration-500 transform ${showToast ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
+            <div className="bg-white shadow-2xl rounded-xl p-6 border border-gray-100 w-80 max-w-[90vw] relative overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#ec8035] to-[#f8b26a]"></div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-green-100 p-2 rounded-full flex-shrink-0">
+                  <MdCheckCircle className="text-green-500" size={24} />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-1">¡Gracias por tu registro!</h4>
+                  <p className="text-sm text-gray-600 mb-3">Has obtenido <span className="font-bold text-[#ec8035]">S/10 de descuento</span> en:</p>
+                  <ul className="space-y-1 text-sm text-gray-700">
+                    <li className="flex items-center">
+                      <Check className="text-green-500 mr-2 flex-shrink-0" size={16} />
+                      Revisión Técnica
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="text-green-500 mr-2 flex-shrink-0" size={16} />
+                      Curso de Actualización
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="text-green-500 mr-2 flex-shrink-0" size={16} />
+                      Examen Médico
+                    </li>
+                  </ul>
+                </div>
+                <button 
+                  onClick={() => setShowToast(false)}
+                  className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Cerrar"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              
+              {/* Progress bar */}
+              <div className="absolute bottom-0 left-0 h-1 bg-gray-100 w-full">
+                <div 
+                  className="h-full bg-[#ec8035] transition-all duration-500 ease-linear"
+                  style={{ width: showToast ? '0%' : '100%' }}
+                />
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </header>
 
@@ -354,20 +381,30 @@ const handleSubmit = async (e: React.FormEvent) => {
                   <span className="ml-2 inline-block text-[11px] px-2 py-0.5 rounded-full bg-[#ec8035] text-white align-middle">Tiempo limitado</span> 
                 </div>
                 <div className="grid lg:grid-cols-2 gap-0 w-full"> {/* Añadido w-full */}
-                  <div className="p-4 md:p-6 lg:p-8 w-full"> {/* Añadido w-full */}
+                  <div className="p-6 md:p-8 lg:p-10 w-full"> {/* Añadido w-full */}
                     <div className={`text-black text-xs font-semibold tracking-widest flex items-center gap-2 mb-3 md:mb-4 ${brandPulse ? 'animate-pulse' : ''}`}>
                       <span>{brandAlt ? 'RTP SAN CRISTOBAL' : 'RTV SAN CRISTOBAL'}</span>
                       <span className="w-2 h-2 bg-black rounded-full" />
                     </div>
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-black leading-tight mb-3">
-                      Llena estos datos y participa de 1 revisión técnica gratis
-                    </h2>
-                    <p className="text-gray-700 text-sm md:text-base lg:text-lg mb-4">
-                      Llena estos datos y obten un cupón de descuento de 10 soles ademas participas de un sorteo para una <span className="font-bold text-orange-500">revisión técnica gratis</span>.
-                    </p>
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-black leading-tight mb-4 md:mb-6">
+                      ¡Llena tus datos y obtén s/.10 de descuento en tu revisión técnica!                    </h2>
+                    <div className="text-gray-700 text-sm md:text-base lg:text-lg mb-6 md:mb-8 space-y-3">
+                      <div className="flex items-start gap-2">
+                        <MdCelebration className="text-[#ec8035] mt-1 flex-shrink-0" size={20} />
+                        <span>Además, tienes descuentos en:</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <MdCheckCircle className="text-green-500 mt-1 flex-shrink-0" size={24} />
+                        <span>Curso de actualización de normativa de transporte y tránsito (mercancías o personas)</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <MdCheckCircle className="text-green-500 mt-1 flex-shrink-0" size={24} />
+                        <span>Examen médico para brevetes</span>
+                      </div>
+                    </div>
                     
 
-                    <div className="space-y-3 mb-4 text-center w-full"> {/* Añadido w-full */}
+                    <div className="space-y-4 mb-6 md:mb-8 text-center w-full"> {/* Añadido w-full */}
                       <div className="flex items-center justify-center gap-2 md:gap-4 w-full"> {/* Añadido w-full */}
                         <button type="button" aria-label="Anterior" onClick={prevContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
                           <MdChevronLeft size={22} />
@@ -398,10 +435,10 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <div className="hidden lg:block h-40 w-40 bg-black opacity-5 rotate-12 absolute -right-8 bottom-6" />
                   </div>
 
-                  <div className="relative bg-white/95 p-4 md:p-6 lg:p-8 w-full"> {/* Añadido w-full */}
+                  <div className="relative bg-white/95 p-6 md:p-8 lg:p-10 w-full"> {/* Añadido w-full */}
                     
-                    <form onSubmit={handleSubmit} className="space-y-3 w-full"> {/* Añadido w-full */}
-                      <div className="grid grid-cols-1 gap-3 w-full"> {/* Añadido w-full */}
+                    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5 w-full"> {/* Añadido w-full */}
+                      <div className="grid grid-cols-1 gap-4 md:gap-5 w-full"> {/* Añadido w-full */}
                         <div className="relative w-full">
                           <input
                             type="text"
@@ -496,26 +533,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                           </div>
                         </div>
 
-                        {/* Fila: Correo + Placa */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 w-full"> {/* Añadido w-full */}
-                          <div className="relative w-full">
-                            <input
-                              type="email"
-                              name="correo"
-                              value={formData.correo}
-                              onChange={handleChange}
-                              required
-                              placeholder="Correo electrónico *"
-                              className={`w-full border ${formErrors.correo ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`} 
-                            />
-                            {formErrors.correo && (
-                              <p className="text-red-500 text-xs mt-1">{formErrors.correo}</p>
-                            )}
-                            {isValidEmail(formData.correo) && !formErrors.correo && (
-                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} /> 
-                            )}
-                          </div>
-
+                        {/* Fila: Placa */}
+                        <div className="w-full">
                           <div className="relative w-full">
                             <input
                               type="text"
