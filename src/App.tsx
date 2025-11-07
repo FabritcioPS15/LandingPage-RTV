@@ -55,7 +55,7 @@ function App() {
   const contacts: { title: string; description: string; href: string; icon: JSX.Element }[] = [
     { 
       title: 'WhatsApp', 
-      description: 'Chatea con nosotros al instante', 
+      description: 'Chatea con nosotros', 
       href: 'https://wa.me/51900111222',
       icon: <FaWhatsapp className="text-green-500" size={24} />
     },
@@ -295,9 +295,9 @@ const handleSubmit = async (e: React.FormEvent) => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col overflow-x-hidden"> {/* Añadido overflow-x-hidden */}
       <header className="bg-[#ec8035] text-white shadow-lg sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="w-full max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl md:text-3xl font-bold">RTV San Cristóbal</h1>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -315,10 +315,10 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
       </header>
 
-      <main className="flex-1 bg-white">
+      <main className="flex-1 bg-white w-full overflow-x-hidden"> {/* Añadido overflow-x-hidden y w-full */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
-            <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden max-w-lg w-full">
+            <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden max-w-lg w-full mx-auto"> {/* Añadido mx-auto */}
               <button
                 onClick={() => setShowModal(false)}
                 className="absolute top-3 right-3 z-10 bg-black text-white rounded-full p-1.5 hover:opacity-90"
@@ -344,56 +344,52 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
           </div>
         )}
-        <div className="min-h-screen bg-white flex flex-col">
-          <div className="flex-1 container mx-auto px-4 py-8 md:py-14 w-full">
-            <div className="max-w-6xl mx-auto">
-              <div className="relative bg-white rounded-2xl shadow-2xl overflow-visible mb-8 border border-black/5">
+        <div className="min-h-screen bg-white flex flex-col w-full overflow-x-hidden"> {/* Añadido overflow-x-hidden y w-full */}
+          <div className="flex-1 w-full px-4 py-4 md:py-14"> {/* Cambiado container por w-full */}
+            <div className="max-w-6xl mx-auto w-full"> {/* Añadido w-full */}
+              <div className="relative bg-white rounded-2xl shadow-2xl overflow-visible mb-6 md:mb-8 border border-black/5 w-full"> {/* Añadido w-full */}
                 {/* Pill fuera de la card, esquina superior izquierda */}
                 <div className="absolute -top-5 -left-5 z-30 bg-black text-white shadow-xl rounded-full px-4 py-1.5 border border-white/10">
                   <span className="text-xs font-semibold whitespace-nowrap">Regístrate ahora</span>
-                  <span className="ml-2 inline-block text-[11px] px-2 py-0.5 rounded-full bg-[#ec8035] text-white align-middle">Tiempo limitado</span>
+                  <span className="ml-2 inline-block text-[11px] px-2 py-0.5 rounded-full bg-[#ec8035] text-white align-middle">Tiempo limitado</span> 
                 </div>
-                <div className="grid lg:grid-cols-2 gap-0">
-                  <div className="p-6 md:p-10">
-                    <div className={`text-black text-xs font-semibold tracking-widest flex items-center gap-2 mb-4 ${brandPulse ? 'animate-pulse' : ''}`}>
+                <div className="grid lg:grid-cols-2 gap-0 w-full"> {/* Añadido w-full */}
+                  <div className="p-4 md:p-6 lg:p-8 w-full"> {/* Añadido w-full */}
+                    <div className={`text-black text-xs font-semibold tracking-widest flex items-center gap-2 mb-3 md:mb-4 ${brandPulse ? 'animate-pulse' : ''}`}>
                       <span>{brandAlt ? 'RTP SAN CRISTOBAL' : 'RTV SAN CRISTOBAL'}</span>
                       <span className="w-2 h-2 bg-black rounded-full" />
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-extrabold text-black leading-tight mb-4">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-black leading-tight mb-3">
                       Llena estos datos y participa de 1 revisión técnica gratis
                     </h2>
-                    <p className="text-gray-700 text-base md:text-lg mb-8">
-                      Regístrate para acceder a oportunidades, beneficios exclusivos y soporte dedicado. Nuestro proceso es rápido, seguro y pensado para acompañarte en cada paso.
+                    <p className="text-gray-700 text-sm md:text-base lg:text-lg mb-4">
+                      Llena estos datos y obten un cupón de descuento de 10 soles ademas participas de un sorteo para una <span className="font-bold text-orange-500">revisión técnica gratis</span>.
                     </p>
                     
 
-                    <div className="space-y-4 mb-8 text-center">
-                      <div className="flex items-center justify-center gap-4">
-                        <button type="button" aria-label="Anterior" onClick={prevContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5">
+                    <div className="space-y-3 mb-4 text-center w-full"> {/* Añadido w-full */}
+                      <div className="flex items-center justify-center gap-2 md:gap-4 w-full"> {/* Añadido w-full */}
+                        <button type="button" aria-label="Anterior" onClick={prevContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
                           <MdChevronLeft size={22} />
                         </button>
-                        <div className="inline-flex items-center gap-4 transition-all bg-white border border-black/10 rounded-xl shadow-sm px-6 py-4">
+                        <a href={contacts[benefitIndex].href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 md:gap-4 transition-all bg-white border border-black/10 rounded-xl shadow-sm px-4 py-3 md:px-6 md:py-4 hover:shadow-md hover:border-[#ec8035]/50 w-full max-w-md flex-1 min-w-0"> {/* Añadido min-w-0 y flex-1 */}
                           <div className="flex-shrink-0">
                             {contacts[benefitIndex].icon}
                           </div>
-                          <div key={benefitIndex} className="animate-fade-in text-left">
-                            <p className="text-xl font-extrabold text-black leading-tight">{contacts[benefitIndex].title}</p>
-                            <p className="text-base text-gray-800">{contacts[benefitIndex].description}</p>
-                            <div className="mt-3">
-                              <a href={contacts[benefitIndex].href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#ec8035] hover:bg-[#d4692a] px-4 py-2 rounded-md transition-colors">
-                                {contacts[benefitIndex].title === 'WhatsApp' && <FaWhatsapp size={16} />}
-                                {contacts[benefitIndex].title === 'Teléfono' && <Phone size={16} />}
-                                {contacts[benefitIndex].title === 'Correo' && <Mail size={16} />}
-                                Ir ahora
-                              </a>
-                            </div>
+                          <div key={benefitIndex} className="animate-fade-in text-left flex-1 min-w-0 overflow-hidden"> {/* Añadido overflow-hidden */}
+                            <p className="text-lg md:text-xl font-extrabold text-black leading-tight truncate">
+                              {contacts[benefitIndex].title}
+                            </p>
+                            <p className="text-sm md:text-base text-gray-800 truncate">
+                              {contacts[benefitIndex].description}
+                            </p>
                           </div>
-                        </div>
-                        <button type="button" aria-label="Siguiente" onClick={nextContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5">
+                        </a>
+                        <button type="button" aria-label="Siguiente" onClick={nextContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
                           <MdChevronRight size={22} />
                         </button>
                       </div>
-                      <div className="flex gap-2 mt-2 justify-center">
+                      <div className="flex gap-2 mt-1 md:mt-2 justify-center">
                         {contacts.map((_, i) => (
                           <span key={i} className={`h-2 w-2 rounded-full ${i === benefitIndex ? 'bg-[#ec8035]' : 'bg-black/20'}`} />
                         ))}
@@ -402,11 +398,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <div className="hidden lg:block h-40 w-40 bg-black opacity-5 rotate-12 absolute -right-8 bottom-6" />
                   </div>
 
-                  <div className="relative bg-white/95 p-6 md:p-8">
+                  <div className="relative bg-white/95 p-4 md:p-6 lg:p-8 w-full"> {/* Añadido w-full */}
                     
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="grid grid-cols-1 gap-4">
-                        <div className="relative">
+                    <form onSubmit={handleSubmit} className="space-y-3 w-full"> {/* Añadido w-full */}
+                      <div className="grid grid-cols-1 gap-3 w-full"> {/* Añadido w-full */}
+                        <div className="relative w-full">
                           <input
                             type="text"
                             name="nombres"
@@ -414,17 +410,17 @@ const handleSubmit = async (e: React.FormEvent) => {
                             onChange={handleChange}
                             required
                             placeholder="Nombres *"
-                            className={`w-full border ${formErrors.nombres ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                            className={`w-full border ${formErrors.nombres ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`} 
                           />
                           {formErrors.nombres && (
                             <p className="text-red-500 text-xs mt-1">{formErrors.nombres}</p>
                           )}
                           {isFilled(formData.nombres) && !formErrors.nombres && (
-                            <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                            <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} /> 
                           )}
                         </div>
                         
-                        <div className="relative">
+                        <div className="relative w-full">
                           <input
                             type="text"
                             name="apellidos"
@@ -432,33 +428,37 @@ const handleSubmit = async (e: React.FormEvent) => {
                             onChange={handleChange}
                             required
                             placeholder="Apellidos *"
-                            className={`w-full border ${formErrors.apellidos ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                            className={`w-full border ${formErrors.apellidos ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`} 
                           />
                           {formErrors.apellidos && (
                             <p className="text-red-500 text-xs mt-1">{formErrors.apellidos}</p>
                           )}
                           {isFilled(formData.apellidos) && !formErrors.apellidos && (
-                            <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                            <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} /> 
                           )}
                         </div>
 
-                        {/* Fila: Tipo Documento + Número Documento + Celular */}
-                        <div className="grid grid-cols-12 gap-4">
-                          {/* Selector de tipo de documento - más angosto */}
-                          <div className="col-span-3 relative">
+                        {/* Fila: Tipo Documento + Número Documento + Celular - MEJORADO PARA MÓVIL */}
+                        <div className="grid grid-cols-12 gap-2 w-full"> {/* Añadido w-full */}
+                          {/* Selector de tipo de documento */}
+                          <div className="col-span-3 md:col-span-2 relative w-full">
                             <select
                               name="documentType"
                               value={formData.documentType}
                               onChange={handleChange}
-                              className="w-full border border-gray-300 bg-white text-gray-800 text-sm rounded-md px-3 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors"
+                              className="w-full border border-gray-300 bg-white text-gray-800 text-xs md:text-sm rounded-md px-2 md:px-5 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] focus:border-[#ec8035] transition-colors appearance-none cursor-pointer h-[52px] md:h-[60px]" 
                             >
                               <option value="dni">DNI</option>
                               <option value="carnet">CE</option>
                             </select>
+                            {/* Flecha personalizada */}
+                            <div className="absolute right-1 md:right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <ChevronDown size={14} className="text-gray-500" /> 
+                            </div>
                           </div>
                           
                           {/* Número de documento */}
-                          <div className="col-span-5 relative">
+                          <div className="col-span-5 md:col-span-6 relative w-full">
                             <input
                               type="text"
                               name="documento"
@@ -466,18 +466,18 @@ const handleSubmit = async (e: React.FormEvent) => {
                               onChange={handleChange}
                               required
                               placeholder={formData.documentType === 'dni' ? 'DNI *' : 'Carnet *'}
-                              className={`w-full border ${formErrors.documento ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                              className={`w-full border ${formErrors.documento ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors h-[52px] md:h-[60px]`} 
                             />
                             {formErrors.documento && (
                               <p className="text-red-500 text-xs mt-1">{formErrors.documento}</p>
                             )}
                             {isFilled(formData.documento) && !formErrors.documento && (
-                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                              <Check className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} /> 
                             )}
                           </div>
 
                           {/* Celular */}
-                          <div className="col-span-4 relative">
+                          <div className="col-span-4 relative w-full">
                             <input
                               type="tel"
                               name="celular"
@@ -485,20 +485,20 @@ const handleSubmit = async (e: React.FormEvent) => {
                               onChange={handleChange}
                               required
                               placeholder="Celular *"
-                              className={`w-full border ${formErrors.celular ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                              className={`w-full border ${formErrors.celular ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors h-[52px] md:h-[60px]`} 
                             />
                             {formErrors.celular && (
                               <p className="text-red-500 text-xs mt-1">{formErrors.celular}</p>
                             )}
                             {isFilled(formData.celular) && !formErrors.celular && (
-                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                              <Check className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} /> 
                             )}
                           </div>
                         </div>
 
                         {/* Fila: Correo + Placa */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 w-full"> {/* Añadido w-full */}
+                          <div className="relative w-full">
                             <input
                               type="email"
                               name="correo"
@@ -506,17 +506,17 @@ const handleSubmit = async (e: React.FormEvent) => {
                               onChange={handleChange}
                               required
                               placeholder="Correo electrónico *"
-                              className={`w-full border ${formErrors.correo ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                              className={`w-full border ${formErrors.correo ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`} 
                             />
                             {formErrors.correo && (
                               <p className="text-red-500 text-xs mt-1">{formErrors.correo}</p>
                             )}
                             {isValidEmail(formData.correo) && !formErrors.correo && (
-                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} /> 
                             )}
                           </div>
 
-                          <div className="relative">
+                          <div className="relative w-full">
                             <input
                               type="text"
                               name="placa"
@@ -524,18 +524,18 @@ const handleSubmit = async (e: React.FormEvent) => {
                               onChange={handleChange}
                               required
                               placeholder="Placa (6 caracteres) *"
-                              className={`w-full border ${formErrors.placa ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-base rounded-md px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`}
+                              className={`w-full border ${formErrors.placa ? 'border-red-500' : 'border-gray-300'} bg-white text-gray-800 text-sm md:text-base rounded-md px-3 md:px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-[#ec8035] transition-colors`} 
                             />
                             {formErrors.placa && (
                               <p className="text-red-500 text-xs mt-1">{formErrors.placa}</p>
                             )}
                             {isFilled(formData.placa) && !formErrors.placa && (
-                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={18} />
+                              <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ec8035]" size={16} />
                             )}
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 w-full"> {/* Añadido w-full */}
                           <label className="flex items-center gap-2 text-sm text-gray-700">
                             <input
                               type="checkbox"
@@ -558,7 +558,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                           )}
                         </div>
 
-                        <div className="flex justify-center">
+                        <div className="flex justify-center pt-2 w-full"> {/* Añadido w-full */}
                           <BrandButton
                             type="submit"
                             disabled={isSubmitting}
@@ -566,7 +566,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                           />
                         </div>
                         
-                        <p className="text-[11px] text-gray-500 leading-relaxed text-center">
+                        <p className="text-[11px] text-gray-500 leading-relaxed text-center w-full"> {/* Añadido w-full */}
                           Al registrarte, aceptas nuestros términos y condiciones y la política de privacidad.
                         </p>
                       </div>
@@ -575,39 +575,39 @@ const handleSubmit = async (e: React.FormEvent) => {
                 </div>
               </div>
 
-              <div id="servicios" className="animate-fade-in">
+              <div id="servicios" className="animate-fade-in w-full"> {/* Añadido w-full */}
                 <button
                   onClick={() => setServicesOpen(!servicesOpen)}
-                  className="w-full bg-[#ec8035] text-white font-bold py-4 px-6 rounded-lg hover:bg-[#d4692a] transition-all duration-300 shadow-lg flex items-center justify-between group"
+                  className="w-full bg-[#ec8035] text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-lg hover:bg-[#d4692a] transition-all duration-300 shadow-lg flex items-center justify-between group" 
                 >
-                  <span className="text-base md:text-lg">Conoce nuestros otros servicios</span>
+                  <span className="text-sm md:text-lg">Conoce nuestros otros servicios</span> 
                   <ChevronDown
-                    size={24}
+                    size={20} 
                     className={`transform transition-transform duration-300 ${servicesOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 
                 {servicesOpen && (
-                  <div className="mt-4 space-y-4 animate-slide-up">
+                  <div className="mt-3 md:mt-4 space-y-3 md:space-y-4 animate-slide-up w-full"> {/* Añadido w-full */}
                     {services.map((service, idx) => {
                       const IconComponent = service.icon;
                       return (
                         <div
                           key={idx}
-                          className="bg-white rounded-lg p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+                          className="bg-white rounded-lg p-4 md:p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 w-full" 
                         >
-                          <div className="flex gap-4 items-start">
-                            <div className="bg-[#ec8035]/10 rounded-lg p-3 flex-shrink-0">
-                              <IconComponent className="text-[#ec8035]" size={28} />
+                          <div className="flex gap-3 md:gap-4 items-start w-full"> {/* Añadido w-full */}
+                            <div className="bg-[#ec8035]/10 rounded-lg p-2 md:p-3 flex-shrink-0">
+                              <IconComponent className="text-[#ec8035]" size={24} /> 
                             </div>
-                            <div className="flex-1">
-                              <h4 className="font-bold text-gray-900 text-lg md:text-xl mb-2">{service.title}</h4>
-                              <p className="text-gray-600 text-sm md:text-base mb-3">{service.description}</p>
-                              <div className="flex flex-wrap gap-2">
+                            <div className="flex-1 min-w-0 w-full"> {/* Añadido w-full */}
+                              <h4 className="font-bold text-gray-900 text-base md:text-lg mb-1 md:mb-2">{service.title}</h4> 
+                              <p className="text-gray-600 text-xs md:text-base mb-2 md:mb-3">{service.description}</p> 
+                              <div className="flex flex-wrap gap-1 md:gap-2 w-full"> {/* Añadido w-full */}
                                 {service.features.map((feature, featureIdx) => (
                                   <span
                                     key={featureIdx}
-                                    className="text-xs bg-[#ec8035]/10 text-[#ec8035] px-3 py-1 rounded-full font-medium"
+                                    className="text-xs bg-[#ec8035]/10 text-[#ec8035] px-2 md:px-3 py-1 rounded-full font-medium" 
                                   >
                                     {feature}
                                   </span>
@@ -623,19 +623,19 @@ const handleSubmit = async (e: React.FormEvent) => {
               </div>
 
               {/* Te podría interesar: carrusel de plantas (texto con hover) */}
-              <section className="mt-12">
-                <h3 className="text-xl font-bold text-black mb-4">Te podría interesar: nuestras otras plantas</h3>
-                <div className="bg-white border border-black/5 rounded-xl p-4 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div key={plantIndex} className="group w-full text-center py-6 transition-all animate-fade-in">
-                      <p className="text-2xl font-extrabold text-black tracking-tight">{plants[plantIndex].name}</p>
-                      <div className="mt-2 text-sm text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+              <section className="mt-8 md:mt-12 w-full"> {/* Añadido w-full */}
+                <h3 className="text-lg md:text-xl font-bold text-black mb-3 md:mb-4">Te podría interesar: nuestras otras plantas</h3>
+                <div className="bg-white border border-black/5 rounded-xl p-3 md:p-4 shadow-sm w-full"> {/* Añadido w-full */}
+                  <div className="flex items-center justify-between w-full"> {/* Añadido w-full */}
+                    <div key={plantIndex} className="group w-full text-center py-4 md:py-6 transition-all animate-fade-in">
+                      <p className="text-xl md:text-2xl font-extrabold text-black tracking-tight">{plants[plantIndex].name}</p>
+                      <div className="mt-1 md:mt-2 text-xs md:text-sm text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
                         <p>Teléfono: <span className="font-semibold">{plants[plantIndex].phone}</span></p>
                         <p>Dirección: <span className="font-semibold">{plants[plantIndex].address}</span></p>
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-1.5 justify-center mt-2">
+                  <div className="flex gap-1.5 justify-center mt-1 md:mt-2">
                     {plants.map((_, i) => (
                       <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === plantIndex ? 'bg-[#ec8035]' : 'bg-black/20'}`} />)
                     )}
