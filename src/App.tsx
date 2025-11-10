@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Menu, X, ChevronDown, Stethoscope, Gauge, Check, Phone, Mail } from 'lucide-react';
 import { MdChevronLeft, MdChevronRight, MdCelebration, MdCheckCircle } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 import BrandButton from './components/BrandButton';
+import { Skeleton, SkeletonText } from './components/Skeleton';
 
 type DocumentType = 'dni' | 'carnet';
 
@@ -39,7 +40,6 @@ function App() {
     empresa: ''
   });
   
-  const [menuOpen, setMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -49,6 +49,8 @@ function App() {
   const [showModal, setShowModal] = useState<boolean>(true);
   const [brandAlt, setBrandAlt] = useState<boolean>(false);
   const [brandPulse, setBrandPulse] = useState<boolean>(false);
+  const [formInView, setFormInView] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const contacts: { title: string; description: string; href: string; icon: JSX.Element }[] = [
     { 
@@ -76,7 +78,7 @@ function App() {
       icon: Stethoscope,
       title: 'Policlínico',
       description: 'Atención médica integral para conductores y pasajeros',
-      features: ['Consultas rápidas', 'Exámenes preventivos', 'Equipo especializado']
+      features: ['Éxamenes médicos',  'Equipo especializado']
     },
     {
       icon: Gauge,
@@ -191,23 +193,55 @@ const handleSubmit = async (e: React.FormEvent) => {
     return () => clearInterval(id);
   }, [contacts.length]);
 
+  // Efecto para la animación del formulario
+  useEffect(() => {
+    const formElement = document.querySelector('#contact-form');
+    if (!formElement) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setFormInView(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    observer.observe(formElement);
+    return () => observer.disconnect();
+  }, []);
+
   const nextContact = () => setBenefitIndex((i) => (i + 1) % contacts.length);
   const prevContact = () => setBenefitIndex((i) => (i - 1 + contacts.length) % contacts.length);
 
-  // Datos de plantas para carrusel textual
-  const plants = [
-    { name: 'Planta Norte', phone: '900 111 222', address: 'Av. Norte 123, Ciudad' },
-    { name: 'Planta Centro', phone: '900 333 444', address: 'Jr. Central 456, Ciudad' },
-    { name: 'Planta Sur', phone: '900 555 666', address: 'Calle Sur 789, Ciudad' },
+  // Datos de la planta
+  const plant = {
+    name: 'Planta Principal',
+    phone: '900 111 222',
+    address: 'Av. Principal 123, Ciudad'
+  };
+
+  // Imágenes de la misma planta
+  const plantImages = [
+    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'https://images.unsplash.com/photo-1600607688969-a5bfcd646cb7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'https://images.unsplash.com/photo-1600566752225-4f4a9c8f9e8d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
   ];
 
-  // Autoplay de plantas
+  // Efecto para cambiar las imágenes automáticamente
   useEffect(() => {
-    const id = setInterval(() => {
-      setPlantIndex((i) => (i + 1) % plants.length);
-    }, 4000);
-    return () => clearInterval(id);
-  }, [plants.length]);
+    const interval = setInterval(() => {
+      setPlantIndex((prevIndex) => (prevIndex + 1) % plantImages.length);
+    }, 4000); // Cambia cada 4 segundos
+    return () => clearInterval(interval);
+  }, [plantImages.length]);
 
   // Oscilar texto RTV/RTP con pulsación cada ~5s
   useEffect(() => {
@@ -287,12 +321,6 @@ const handleSubmit = async (e: React.FormEvent) => {
       <header className="bg-[#ec8035] text-white shadow-lg sticky top-0 z-50">
         <div className="w-full max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl md:text-3xl font-bold">RTV San Cristóbal</h1>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 hover:bg-[#d4692a] rounded-lg transition-colors"
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
           {/* Toast */}
           <div className={`fixed bottom-6 right-6 z-50 transition-all duration-500 transform ${showToast ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
             <div className="bg-white shadow-2xl rounded-xl p-6 border border-gray-100 w-80 max-w-[90vw] relative overflow-hidden">
@@ -376,9 +404,9 @@ const handleSubmit = async (e: React.FormEvent) => {
             <div className="max-w-6xl mx-auto w-full"> {/* Añadido w-full */}
               <div className="relative bg-white rounded-2xl shadow-2xl overflow-visible mb-6 md:mb-8 border border-black/5 w-full"> {/* Añadido w-full */}
                 {/* Pill fuera de la card, esquina superior izquierda */}
-                <div className="absolute -top-5 -left-5 z-30 bg-black text-white shadow-xl rounded-full px-4 py-1.5 border border-white/10">
+                <div className="absolute -top-4 -left-4 z-30 bg-black text-white shadow-xl rounded-full px-3 py-1 border border-white/10 flex items-center">
                   <span className="text-xs font-semibold whitespace-nowrap">Regístrate ahora</span>
-                  <span className="ml-2 inline-block text-[11px] px-2 py-0.5 rounded-full bg-[#ec8035] text-white align-middle">Tiempo limitado</span> 
+                  <span className="ml-1.5 inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-[#ec8035] text-white">Tiempo limitado</span> 
                 </div>
                 <div className="grid lg:grid-cols-2 gap-0 w-full"> {/* Añadido w-full */}
                   <div className="p-6 md:p-8 lg:p-10 w-full"> {/* Añadido w-full */}
@@ -404,40 +432,45 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </div>
                     
 
-                    <div className="space-y-4 mb-6 md:mb-8 text-center w-full"> {/* Añadido w-full */}
-                      <div className="flex items-center justify-center gap-2 md:gap-4 w-full"> {/* Añadido w-full */}
-                        <button type="button" aria-label="Anterior" onClick={prevContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
-                          <MdChevronLeft size={22} />
+                    <div className="space-y-2 mb-0 md:mb-6 text-center w-full">
+                      <div className="flex items-center justify-center gap-1.5 md:gap-3 w-full">
+                        <button type="button" aria-label="Anterior" onClick={prevContact} className="p-1.5 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
+                          <MdChevronLeft size={18} />
                         </button>
-                        <a href={contacts[benefitIndex].href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 md:gap-4 transition-all bg-white border border-black/10 rounded-xl shadow-sm px-4 py-3 md:px-6 md:py-4 hover:shadow-md hover:border-[#ec8035]/50 w-full max-w-md flex-1 min-w-0"> {/* Añadido min-w-0 y flex-1 */}
+                        <a href={contacts[benefitIndex].href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 md:gap-3 transition-all bg-white border border-black/10 rounded-lg shadow-sm px-3 py-2 md:px-4 md:py-3 hover:shadow-md hover:border-[#ec8035]/50 w-full max-w-md flex-1 min-w-0">
                           <div className="flex-shrink-0">
-                            {contacts[benefitIndex].icon}
+                            {React.cloneElement(contacts[benefitIndex].icon, { size: 20 })}
                           </div>
-                          <div key={benefitIndex} className="animate-fade-in text-left flex-1 min-w-0 overflow-hidden"> {/* Añadido overflow-hidden */}
-                            <p className="text-lg md:text-xl font-extrabold text-black leading-tight truncate">
+                          <div key={benefitIndex} className="animate-fade-in text-left flex-1 min-w-0 overflow-hidden">
+                            <p className="text-sm md:text-base font-bold text-black leading-tight truncate">
                               {contacts[benefitIndex].title}
                             </p>
-                            <p className="text-sm md:text-base text-gray-800 truncate">
+                            <p className="text-xs md:text-sm text-gray-600 truncate">
                               {contacts[benefitIndex].description}
                             </p>
                           </div>
                         </a>
-                        <button type="button" aria-label="Siguiente" onClick={nextContact} className="p-2 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
-                          <MdChevronRight size={22} />
+                        <button type="button" aria-label="Siguiente" onClick={nextContact} className="p-1.5 rounded-full border border-black/10 hover:bg-black/5 flex-shrink-0">
+                          <MdChevronRight size={18} />
                         </button>
                       </div>
-                      <div className="flex gap-2 mt-1 md:mt-2 justify-center">
+                      <div className="flex gap-1.5 mt-1 justify-center">
                         {contacts.map((_, i) => (
-                          <span key={i} className={`h-2 w-2 rounded-full ${i === benefitIndex ? 'bg-[#ec8035]' : 'bg-black/20'}`} />
+                          <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === benefitIndex ? 'bg-[#ec8035]' : 'bg-black/20'}`} />
                         ))}
                       </div>
                     </div>
                     <div className="hidden lg:block h-40 w-40 bg-black opacity-5 rotate-12 absolute -right-8 bottom-6" />
                   </div>
 
-                  <div className="relative bg-white/95 p-6 md:p-8 lg:p-10 w-full"> {/* Añadido w-full */}
+                  <div 
+                    id="contact-form"
+                    className={`relative bg-white/95 p-5 md:p-8 lg:p-10 w-full transition-all duration-700 ease-out transform ${
+                      formInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
+                  > {/* Reducido p-6 a p-5 en móvil */}
                     
-                    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5 w-full"> {/* Añadido w-full */}
+                    <form onSubmit={handleSubmit} className="space-y-3 md:space-y-5 w-full"> {/* Reducido space-y-4 a space-y-3 en móvil */}
                       <div className="grid grid-cols-1 gap-4 md:gap-5 w-full"> {/* Añadido w-full */}
                         <div className="relative w-full">
                           <input
@@ -554,7 +587,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                           </div>
                         </div>
 
-                        <div className="space-y-2 w-full"> {/* Añadido w-full */}
+                        <div className="space-y-3 md:space-y-5 w-full"> {/* Ajustado space-y-4 a space-y-3 para móvil */}
                           <label className="flex items-center gap-2 text-sm text-gray-700">
                             <input
                               type="checkbox"
@@ -590,6 +623,16 @@ const handleSubmit = async (e: React.FormEvent) => {
                         </p>
                       </div>
                     </form>
+                    
+                    {/* Indicador de scroll */}
+                    <div className="flex justify-center pt-4 pb-2">
+                      <div className="flex flex-col items-center animate-bounce">
+                        <span className="text-xs text-gray-500 mb-1">Desliza para ver más</span>
+                        <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -641,23 +684,34 @@ const handleSubmit = async (e: React.FormEvent) => {
                 )}
               </div>
 
-              {/* Te podría interesar: carrusel de plantas (texto con hover) */}
-              <section className="mt-8 md:mt-12 w-full"> {/* Añadido w-full */}
-                <h3 className="text-lg md:text-xl font-bold text-black mb-3 md:mb-4">Te podría interesar: nuestras otras plantas</h3>
-                <div className="bg-white border border-black/5 rounded-xl p-3 md:p-4 shadow-sm w-full"> {/* Añadido w-full */}
-                  <div className="flex items-center justify-between w-full"> {/* Añadido w-full */}
-                    <div key={plantIndex} className="group w-full text-center py-4 md:py-6 transition-all animate-fade-in">
-                      <p className="text-xl md:text-2xl font-extrabold text-black tracking-tight">{plants[plantIndex].name}</p>
-                      <div className="mt-1 md:mt-2 text-xs md:text-sm text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <p>Teléfono: <span className="font-semibold">{plants[plantIndex].phone}</span></p>
-                        <p>Dirección: <span className="font-semibold">{plants[plantIndex].address}</span></p>
+              {/* Sección de la planta con imágenes cambiantes */}
+              <section className="mt-8 md:mt-12 w-full">
+                <h3 className="text-lg md:text-xl font-bold text-black mb-3 md:mb-4">Nuestra planta</h3>
+                <div className="relative w-full h-64 md:h-96 rounded-xl overflow-hidden shadow-lg">
+                  {/* Imagen de fondo con transición */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out"
+                    style={{ 
+                      backgroundImage: `url(${plantImages[plantIndex]})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      transition: 'opacity 1s ease-in-out',
+                      opacity: 1
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h4 className="text-2xl md:text-3xl font-bold mb-2 drop-shadow-lg">{plant.name}</h4>
+                        <div className="bg-black/40 backdrop-blur-sm inline-block px-4 py-3 rounded-lg">
+                          <p className="text-sm md:text-base">
+                            <span className="font-semibold">Teléfono:</span> {plant.phone}
+                          </p>
+                          <p className="text-sm md:text-base">
+                            <span className="font-semibold">Dirección:</span> {plant.address}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-1.5 justify-center mt-1 md:mt-2">
-                    {plants.map((_, i) => (
-                      <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === plantIndex ? 'bg-[#ec8035]' : 'bg-black/20'}`} />)
-                    )}
                   </div>
                 </div>
               </section>
