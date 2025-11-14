@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { X, ChevronDown, Stethoscope, Gauge, Check, Phone, Mail } from 'lucide-react';
+import popupImage from './Imagenes/Pop-Up.jpeg';
 import { MdCheckCircle } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 import BrandButton from './components/BrandButton';
@@ -292,10 +293,14 @@ const handleSubmit = async (e: React.FormEvent) => {
     address: 'Ctra. Panamericana Sur 299, 11004'
   };
 
+  // Importar imágenes para producción
+  const plantImage1 = new URL('./Imagenes/3.jpeg', import.meta.url).href;
+  const plantImage2 = new URL('./Imagenes/5.jpeg', import.meta.url).href;
+
   // Imágenes de la planta RTV Ica
   const plantImages = [
-    '/src/Imagenes/3.jpeg',
-    '/src/Imagenes/5.jpeg'
+    plantImage1,
+    plantImage2
   ];
 
   // Efecto para cambiar las imágenes automáticamente con transición suave
@@ -445,7 +450,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <X size={20} />
               </button>
               <img
-                src="/src/Imagenes/Pop-Up.jpeg"
+                src={popupImage}
                 alt="Promoción RTV San Cristóbal"
                 className="w-full h-auto max-h-[400px] object-contain"
               />
