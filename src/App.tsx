@@ -254,7 +254,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   const plant = {
     name: 'Planta RTV Ica',
     phone: '955403509',
-    address: 'referencia: Frente al grifo Pecsa, Subtanjalla'
+    address: 'PANAMERICANA SUR KM 299',
+    reference: 'Ref: frente al grifo Pecsa.'
   };
 
   // Importar imágenes para producción
@@ -761,6 +762,9 @@ const handleSubmit = async (e: React.FormEvent) => {
                             </p>
                             <p className="text-xs md:text-sm">
                               <span className="font-medium">Dirección:</span> {plant.address}
+                            </p>
+                            <p className="text-xs md:text-sm text-white/80">
+                              {plant.reference}
                             </p>
                           </div>
                         </div>
