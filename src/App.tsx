@@ -254,7 +254,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   const plant = {
     name: 'Planta RTV Ica',
     phone: '955403509',
-    address: 'Ctra. Panamericana Sur 299, 11004'
+    address: 'referencia: Frente al grifo Pecsa, Subtanjalla'
   };
 
   // Importar imágenes para producción
@@ -738,7 +738,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     {/* Botón de navegación - Móvil */}
                     <button 
                       onClick={() => {
-                        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(plant.address)}`;
+                        const mapsUrl = 'https://maps.app.goo.gl/Z7wQz1b77RbsVXCZ8';
                         window.open(mapsUrl, '_blank');
                       }}
                       className="absolute top-3 right-3 md:hidden flex items-center justify-center w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all duration-300 hover:scale-105 active:scale-95"
@@ -768,7 +768,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         {/* Botón de navegación - Desktop */}
                         <button 
                           onClick={() => {
-                            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(plant.address)}`;
+                            const mapsUrl = 'https://maps.app.goo.gl/Z7wQz1b77RbsVXCZ8';
                             window.open(mapsUrl, '_blank');
                           }}
                           className="hidden md:flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2.5 text-sm rounded-lg transition-all duration-300 hover:scale-105 active:scale-95"
