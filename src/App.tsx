@@ -445,9 +445,9 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <X size={20} />
               </button>
               <img
-                src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop"
+                src="/src/Imagenes/Pop-Up.jpeg"
                 alt="Promoción RTV San Cristóbal"
-                className="w-full h-64 object-cover"
+                className="w-full h-auto max-h-[400px] object-contain"
               />
               <div className="p-4 text-center">
                 <h3 className="text-lg font-bold text-black">Bienvenido a RTV San Cristóbal</h3>
