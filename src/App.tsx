@@ -503,7 +503,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       </div>
 
                       <div className="flex items-start gap-3">
-                        <MdCheckCircle className="text-green-500 mt-1 flex-shrink-0" size={24} />
+                        <MdCheckCircle className="text-green-500 -mt-0 sm:mt-1 flex-shrink-0" size={24} />
                         <span className="text-base sm:text-lg leading-snug">
                           Examen médico para brevetes
                         </span>
