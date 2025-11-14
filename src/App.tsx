@@ -53,11 +53,9 @@ function App() {
   const [formInView, setFormInView] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
-  // Nuevos estados para el efecto de máquina de escribir
-  const [displayText, setDisplayText] = useState<string>('RTV SAN CRISTOBAL');
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
+  // Nuevos estados para el efecto de cambio de colores ondulante
+  const [colorIndex, setColorIndex] = useState<number>(0);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
   const contacts: { title: string; description: string; href: string; icon: JSX.Element }[] = [
     { 
@@ -95,63 +93,29 @@ function App() {
     }
   ];
 
-  // Efecto para la animación de máquina de escribir mejorada
+  // Efecto para la animación de cambio de colores ondulante
   useEffect(() => {
-    const texts = ['RTV SAN CRISTOBAL', 'RTP SAN CRISTOBAL'];
-    let currentTextIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-    let typeSpeed = 150; // Velocidad base de escritura (ms)
-    let deleteSpeed = 400; // Velocidad de borrado (ms)
-    let pauseBetweenWords = 2000; // Pausa entre palabras (ms)
-    let pauseAtEnd = 1500; // Pausa al terminar de escribir (ms)
-
-    const typeWriter = () => {
-      const currentText = texts[currentTextIndex];
+    const colors = ['text-black', 'text-[#ec8035]'];
+    let currentIndex = 0;
+    
+    const animateColors = () => {
+      setIsAnimating(true);
+      setColorIndex(currentIndex);
       
-      if (isDeleting) {
-        // Efecto de borrado
-        setDisplayText(currentText.substring(0, charIndex - 1));
-        charIndex--;
-        
-        // Tiempo de pausa después de borrar
-        if (charIndex === 0) {
-          isDeleting = false;
-          currentTextIndex = (currentTextIndex + 1) % texts.length;
-          setTimeout(typeWriter, pauseBetweenWords);
-          return;
-        }
-      } else {
-        // Efecto de escritura
-        setDisplayText(currentText.substring(0, charIndex + 1));
-        charIndex++;
-        
-        // Si terminamos de escribir, iniciamos el borrado después de una pausa
-        if (charIndex === currentText.length) {
-          isDeleting = true;
-          setTimeout(typeWriter, pauseAtEnd);
-          return;
-        }
-      }
-      
-      // Velocidad de escritura/borrado con variación aleatoria para efecto más natural
-      const speed = isDeleting ? 
-        deleteSpeed + Math.random() * 50 : // Variación en la velocidad de borrado
-        typeSpeed + (Math.random() * 50 - 25); // Pequeña variación en la velocidad de escritura
-      
-      setTimeout(typeWriter, speed);
+      // Cambiar al siguiente color después de un breve delay
+      setTimeout(() => {
+        currentIndex = (currentIndex + 1) % colors.length;
+        setColorIndex(currentIndex);
+        setIsAnimating(false);
+      }, 300); // Duración del cambio de color individual
     };
     
-    // Iniciar la animación con un pequeño retraso inicial
-    const timer = setTimeout(() => {
-      setIsTyping(true);
-      typeWriter();
-    }, 1000);
+    // Iniciar la animación con intervalo
+    const interval = setInterval(animateColors, 2000); // Cambia cada 2 segundos
     
-    // Limpiar el temporizador al desmontar el componente
+    // Limpiar el intervalo al desmontar el componente
     return () => {
-      clearTimeout(timer);
-      setIsTyping(false);
+      clearInterval(interval);
     };
   }, []);
 
@@ -311,16 +275,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     return () => clearInterval(interval);
   }, [plantImages.length]);
 
-  // Oscilar texto RTV/RTP con pulsación cada ~5s (mantenido para compatibilidad)
-  useEffect(() => {
-    const id = setInterval(() => {
-      setBrandAlt((v) => !v);
-      setBrandPulse(true);
-      setTimeout(() => setBrandPulse(false), 800);
-    }, 5000);
-    return () => clearInterval(id);
-  }, []);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
@@ -471,17 +425,19 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className="flex-1 w-full px-4 py-4 md:py-14">
             <div className="max-w-6xl mx-auto w-full">
               <div className="relative bg-white rounded-2xl shadow-2xl overflow-visible mb-6 md:mb-8 border border-black/5 w-full">
-                {/* Pill fuera de la card, esquina superior izquierda */}
-                <div className="absolute -top-4 -left-4 z-30 bg-black text-white shadow-xl rounded-full px-3 py-1 border border-white/10 flex items-center">
-                  <span className="text-xs font-semibold whitespace-nowrap">Regístrate ahora</span>
-                  <span className="ml-1.5 inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-[#ec8035] text-white">Tiempo limitado</span> 
-                </div>
+ {/* Pill fuera de la card, esquina superior izquierda */}
+<div className="absolute -top-2 lg:-top-4 -left-4 z-30 bg-black text-white shadow-xl rounded-full px-3 py-1 border border-white/10 flex items-center">
+  <span className="text-xs font-semibold whitespace-nowrap">Regístrate ahora</span>
+  <span className="ml-1.5 inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-[#ec8035] text-white">Tiempo limitado</span>
+</div>
                 <div className="grid lg:grid-cols-2 gap-0 w-full">
                   <div className="p-6 md:p-8 lg:p-10 w-full">
-                    {/* Componente con efecto de máquina de escribir */}
-                    <div className={`text-black text-xs font-semibold tracking-widest flex items-center gap-2 mb-3 md:mb-4 ${brandPulse ? 'animate-pulse' : ''}`}>
-                      <span className="typewriter-text">{displayText}</span>
-                      <span className="w-2 h-2 bg-black rounded-full typing-cursor animate-pulse" />
+                    {/* Componente con efecto de cambio de colores ondulante */}
+                    <div className={`text-xs font-semibold tracking-widest flex items-center gap-2 mb-3 md:mb-4 transition-all duration-500 ${
+                      colorIndex === 0 ? 'text-black' : 'text-[#ec8035]'
+                    } ${isAnimating ? 'scale-105' : 'scale-100'}`}>
+                      <span>RTV SAN CRISTOBAL</span>
+                      <span className="w-2 h-2 rounded-full animate-pulse bg-current" />
                     </div>
                     
                     {/* Título principal mejorado para móvil */}
