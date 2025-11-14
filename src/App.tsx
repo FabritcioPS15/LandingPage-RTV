@@ -410,7 +410,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               />
               <div className="p-4 text-center">
                 <h3 className="text-lg font-bold text-black">Bienvenido a RTV San Cristóbal</h3>
-                <p className="text-sm text-gray-700 mt-1">Aprovecha nuestras promociones y participa en una revisión técnica gratis.</p>
+                <p className="text-sm text-gray-700 mt-1">Completa el formulario y aprovecha nuestra promoción exclusiva.</p>
                 <button
                   onClick={() => setShowModal(false)}
                   className="mt-4 inline-flex items-center justify-center bg-[#ec8035] text-white font-semibold px-4 py-2 rounded-md hover:bg-[#d4692a]"
